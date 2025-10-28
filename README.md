@@ -38,7 +38,3 @@ llm-agent-feed/
 3. GitHub Actions 会每日自动运行（或你可以手动在 Actions 页面触发），`data/papers.json` 将被更新并自动 commit & push。
 4. 若你需要更频繁的更新或更复杂的处理，可调整 `.github/workflows/update_arxiv.yml`。
 
-## 说明
-- 脚本使用 arXiv Atom API；User-Agent 已在脚本中设置，请替换为你的联系邮箱以便遵循 arXiv 建议。
-- `institution` 字段尝试提取 arXiv 提供的 affiliation，若无则做弱回退（关键字匹配）。
-- 若需更精确的机构匹配或作者与机构的映射，需额外调用外部 API 或解析 PDF。
