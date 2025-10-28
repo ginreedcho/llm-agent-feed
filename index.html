@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LLM Agent Papers · 最新</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>LLM Agent Papers</h1>
+    <p class="subtitle">每日抓取并展示最新的 arXiv 文章（LLM / agent 相关）</p>
+  </header>
+
+  <main id="content">
+    <section id="meta">
+      <p>最新更新：<span id="last-updated">载入中…</span></p>
+    </section>
+
+    <section id="papers">
+      <ul id="paper-list" class="paper-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>自动抓取自 arXiv · 由 GitHub Actions 定时更新</p>
+  </footer>
+
+  <script>
+    /* ---------- helper ---------- */
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function mkBadge(text) {
+      return `<span class="tag-badge">${escapeHtml(text)}</span>`;
+    }
+
+    /* ---------- rendering & read-more logic ---------- */
+    const ABSTRACT_TRUNCATE = 360; // 摘要截断长度（字符数）
+
+    function renderAbstractHTML(fullText, link) {
+      // 如果短于截断长度，直接返回纯文本（HTML-escaped）
+      const safe = escapeHtml(fullText);
+      if (!fullText) return `<span class="abstract-text"></span>`;
+      if (fullText.length <= ABSTRACT_TRUNCATE) {
+        return `<span class="abstract-text">${safe}</span>`;
+      }
+      // 否则返回带有折叠/展开控制的结构
+      const short = escapeHtml(fullText.slice(0, ABSTRACT_TRUNCATE));
+      const rest = escapeHtml(fullText.slice(ABSTRACT_TRUNCATE));
+      // include external arXiv link at the end of expanded content
+      const moreLink = link ? ` <a class="ext-link" href="${escapeHtml(link)}" target="_blank" rel="noopener">[arXiv]</a>` : '';
+      return `
+        <span class="abstract-text">
+          <span class="abstract-short">${short}…</span>
+          <span class="abstract-rest" style="display:none">${rest}${moreLink}</span>
+          <button class="read-toggle" aria-expanded="false">Read more</button>
+        </span>
+      `;
+    }
+
+    function attachReadToggleHandlers(container) {
+      container.querySelectorAll('.read-toggle').forEach(btn=>{
+        btn.onclick = (e)=>{
+          const parent = btn.closest('.abstract-text');
+          const short = parent.querySelector('.abstract-short');
+          const rest = parent.querySelector('.abstract-rest');
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          if (!expanded) {
+            short.style.display = 'none';
+            rest.style.display = 'inline';
+            btn.textContent = 'Collapse';
+            btn.setAttribute('aria-expanded','true');
+          } else {
+            short.style.display = '';
+            rest.style.display = 'none';
+            btn.textContent = 'Read more';
+            btn.setAttribute('aria-expanded','false');
+          }
+        };
+      });
+    }
+
+    /* ---------- main ---------- */
+    async function renderFeed(){
+      try {
+        const r = await fetch('data/papers.json?' + Date.now());
+        const arr = await r.json();
+        const list = document.getElementById('paper-list');
+        const lastUpdated = document.getElementById('last-updated');
+        if (!arr || arr.length === 0) {
+          list.innerHTML = '<li class="paper">暂无论文</li>';
+          lastUpdated.textContent = '-';
+          return;
+        }
+        lastUpdated.textContent = new Date(arr[0].fetched_at).toLocaleString();
+
+        let html = '';
+        for (const p of arr) {
+          const id = escapeHtml(p.id || '');
+          const title = escapeHtml(p.title || '(no title)');
+          const date = escapeHtml(p.date || '');
+          const tagsArr = p.tags || [];
+          const authors = escapeHtml((p.authors || []).join(', '));
+          const inst = escapeHtml(p.institution || '');
+          const link = p.link ? p.link : ('https://arxiv.org/abs/' + (p.id||''));
+          const abstractHtml = renderAbstractHTML(p.abstract || '', link);
+
+          // build tags as badges; limit to first 8 to avoid太多
+          const badges = tagsArr.slice(0, 8).map(t => mkBadge(t)).join(' ');
+
+          html += `
+            <li class="paper">
+              <div class="paper-head">
+                <h3 class="paper-title">[${id}] ${title}</h3>
+                <div class="paper-date">${date}</div>
+              </div>
+
+              <ul class="meta-list">
+                <li><strong>tags:</strong> <span class="tag-row">${badges}${tagsArr.length > 8 ? ' <span class="more-tags">…</span>' : ''}</span></li>
+                <li><strong>authors:</strong> ${authors}</li>
+                <li><strong>institution:</strong> ${inst}</li>
+                <li><strong>link:</strong> <a href="${escapeHtml(link)}" target="_blank" rel="noopener">${escapeHtml(link)}</a></li>
+                <li><strong>abstract:</strong> ${abstractHtml}</li>
+              </ul>
+            </li>
+          `;
+        }
+
+        list.innerHTML = html;
+        attachReadToggleHandlers(list);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('paper-list').innerHTML = '<li class="paper">加载失败</li>';
+      }
+    }
+    renderFeed();
+  </script>
+</body>
+</html>
