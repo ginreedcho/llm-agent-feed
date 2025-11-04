@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-fetch_arxiv.py（最终版 - 仅合并昨日新增）
+fetch_arxiv.py（最终版 - 保留最近N天新增）
 - 使用 arXiv Atom API 拉取符合 QUERIES 的论文
 - 解析并产出条目格式： id, title, date(YYYY-MM-DD), tags, authors, institution, link, abstract, fetched_at
-- 仅保留“昨日（UTC）”发布的条目作为新增，合并入已有 history（data/papers.json）
+- 保留最近 DAYS_TO_KEEP 天（UTC）发布的条目作为新增，合并入已有 history（data/papers.json）
 - 合并去重后按 date/fetched_at 降序保存（保留最近 KEEP_MAX 条）
 """
 from __future__ import annotations
@@ -22,8 +22,9 @@ ARXIV_API = "http://export.arxiv.org/api/query"
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 DATA_DIR = os.path.join(ROOT, "data")
 OUTPUT_FILE = os.path.join(DATA_DIR, "papers.json")
-MAX_RESULTS_PER_QUERY = 50
+MAX_RESULTS_PER_QUERY = 200
 KEEP_MAX = 600
+DAYS_TO_KEEP = 7  # 保留最近N天的文章（而不是只保留昨日）
 
 # 请把 email 改为你的联系邮箱（遵守 arXiv 建议）
 HEADERS = {"User-Agent": "llm-agent-feed/1.0 (mailto:your-email@example.com)"}
@@ -164,7 +165,7 @@ def merge_and_dedupe(old: List[Dict[str, Any]], new: List[Dict[str, Any]]) -> Li
         if e['id'] in by_id:
             # if new is newer, replace
             try:
-                if e.get('fetched_at', '') > by_id[e['id']].get('fetched_at', ''):
+                if e.get('fetched_at', '') > by_id[e['id']].get('fetched_at', ''): 
                     by_id[e['id']] = e
             except Exception:
                 by_id[e['id']] = e
@@ -196,10 +197,11 @@ def main():
             uniq[e['id']] = e
     new_list = list(uniq.values())
 
-    # calculate yesterday (UTC)
-    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date()
+    # calculate cutoff date (UTC): keep articles from the last N days
+    today_utc = datetime.now(timezone.utc).date()
+    cutoff_date = today_utc - timedelta(days=DAYS_TO_KEEP)
 
-    # filter new_list to only keep those with published date == yesterday
+    # filter new_list to keep those published within the last N days
     new_list_filtered: List[Dict[str, Any]] = []
     for e in new_list:
         pub_str = e.get("date", "")
@@ -213,14 +215,16 @@ def main():
                 pub_date = datetime.fromisoformat(e.get("fetched_at", "").replace('Z', '+00:00')).date()
             except Exception:
                 continue
-        if pub_date == yesterday:
+        # Keep articles published within the last N days (inclusive)
+        if pub_date >= cutoff_date:
             new_list_filtered.append(e)
+
 
     existing = load_existing()
     merged = merge_and_dedupe(existing, new_list_filtered)
     save_entries(merged)
 
-    print(f"Found {len(new_list)} unique results this run; {len(new_list_filtered)} are from yesterday ({yesterday.isoformat()}).")
+    print(f"Found {len(new_list)} unique results this run; {len(new_list_filtered)} are from the last {DAYS_TO_KEEP} days (since {cutoff_date.isoformat()}).")
     print(f"Saved {len(merged)} total entries to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
