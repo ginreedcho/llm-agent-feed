@@ -198,6 +198,7 @@ def main():
 
     # calculate yesterday (UTC)
     yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).date()
+    
 
     # filter new_list to only keep those with published date == yesterday
     new_list_filtered: List[Dict[str, Any]] = []
@@ -213,9 +214,11 @@ def main():
                 pub_date = datetime.fromisoformat(e.get("fetched_at", "").replace('Z', '+00:00')).date()
             except Exception:
                 continue
+        print(f"Article date: {pub_date}, Yesterday: {yesterday}")
         if pub_date == yesterday:
             new_list_filtered.append(e)
-
+        
+        
     existing = load_existing()
     merged = merge_and_dedupe(existing, new_list_filtered)
     save_entries(merged)
