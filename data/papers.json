@@ -1,5 +1,48 @@
 [
   {
+    "id": "2511.08060v1",
+    "title": "From LLMs to Agents: A Comparative Evaluation of LLMs and LLM-based Agents in Security Patch Detection",
+    "date": "2025-11-11",
+    "tags": [
+      "cs.CR",
+      "CR",
+      "cs.SE",
+      "SE"
+    ],
+    "authors": [
+      "Junxiao Han",
+      "Zheng Yu",
+      "Lingfeng Bao",
+      "Jiakun Liu",
+      "Yao Wan",
+      "Jianwei Yin",
+      "Shuiguang Deng",
+      "Song Han"
+    ],
+    "institution": "MIT",
+    "link": "https://arxiv.org/pdf/2511.08060v1",
+    "abstract": "The widespread adoption of open-source software (OSS) has accelerated software innovation but also increased security risks due to the rapid propagation of vulnerabilities and silent patch releases. In recent years, large language models (LLMs) and LLM-based agents have demonstrated remarkable capabilities in various software engineering (SE) tasks, enabling them to effectively address software security challenges such as vulnerability detection. However, systematic evaluation of the capabilities of LLMs and LLM-based agents in security patch detection remains limited. To bridge this gap, we conduct a comprehensive evaluation of the performance of LLMs and LLM-based agents for security patch detection. Specifically, we investigate three methods: Plain LLM (a single LLM with a system prompt), Data-Aug LLM (data augmentation based on the Plain LLM), and the ReAct Agent (leveraging the thought-action-observation mechanism). We also evaluate the performance of both commercial and open-source LLMs under these methods and compare these results with those of existing baselines. Furthermore, we analyze the detection performance of these methods across various vulnerability types, and examine the impact of different prompting strategies and context window sizes on the results. Our findings reveal that the Data-Aug LLM achieves the best overall performance, whereas the ReAct Agent demonstrates the lowest false positive rate (FPR). Although baseline methods exhibit strong accuracy, their false positive rates are significantly higher. In contrast, our evaluated methods achieve comparable accuracy while substantially reducing the FPR. These findings provide valuable insights into the practical applications of LLMs and LLM-based agents in security patch detection, highlighting their advantage in maintaining robust performance while minimizing false positive rates.",
+    "fetched_at": "2025-11-13T02:20:38.588809Z"
+  },
+  {
+    "id": "2511.07568v1",
+    "title": "Procedural Knowledge Improves Agentic LLM Workflows",
+    "date": "2025-11-10",
+    "tags": [
+      "cs.AI",
+      "AI"
+    ],
+    "authors": [
+      "Vincent Hsiao",
+      "Mark Roberts",
+      "Leslie Smith"
+    ],
+    "institution": "",
+    "link": "https://arxiv.org/pdf/2511.07568v1",
+    "abstract": "Large language models (LLMs) often struggle when performing agentic tasks without substantial tool support, prom-pt engineering, or fine tuning. Despite research showing that domain-dependent, procedural knowledge can dramatically increase planning efficiency, little work evaluates its potential for improving LLM performance on agentic tasks that may require implicit planning. We formalize, implement, and evaluate an agentic LLM workflow that leverages procedural knowledge in the form of a hierarchical task network (HTN). Empirical results of our implementation show that hand-coded HTNs can dramatically improve LLM performance on agentic tasks, and using HTNs can boost a 20b or 70b parameter LLM to outperform a much larger 120b parameter LLM baseline. Furthermore, LLM-created HTNs improve overall performance, though less so. The results suggest that leveraging expertise--from humans, documents, or LLMs--to curate procedural knowledge will become another important tool for improving LLM workflows.",
+    "fetched_at": "2025-11-13T02:20:38.588297Z"
+  },
+  {
     "id": "2511.04886v1",
     "title": "Beta Distribution Learning for Reliable Roadway Crash Risk Assessment",
     "date": "2025-11-07",
@@ -13668,44 +13711,5 @@
     "link": "http://arxiv.org/pdf/2511.02237v1",
     "abstract": "An increasing number of LLMs employ Mixture-of-Experts (MoE) architectures where the feed-forward layer is replaced by a pool of experts and each token only activates a small subset of them. During autoregressive generation, these models often enter a memory-bound regime even for moderate batch sizes because the average expert load grows more slowly than in an equivalent dense feedforward layer. Consequently, MoE latency is governed by the number of activated experts. We introduce a framework for dynamically re-routing token-to-expert mapping to lower this number (and thus, the decode latency) while preserving a comparable quality. Our best results use a batch-aware routing that works by having tokens piggyback experts that have already been loaded into memory due to being crucial to other tokens within the same batch. Empirically, we evaluate our method on the Qwen3-30B and Qwen3-235B models with a batch size of $16$. Without any statistically significant loss in accuracy, our approach achieves latency reductions of $39\\%$ and $15\\%$ in the MoE layer decode latency, respectively.",
     "fetched_at": "2025-11-06T02:19:07.218039Z"
-  },
-  {
-    "id": "2511.02243v1",
-    "title": "When Modalities Conflict: How Unimodal Reasoning Uncertainty Governs   Preference Dynamics in MLLMs",
-    "date": "2025-11-04",
-    "tags": [
-      "cs.AI",
-      "AI"
-    ],
-    "authors": [
-      "Zhuoran Zhang",
-      "Tengyue Wang",
-      "Xilin Gong",
-      "Yang Shi",
-      "Haotian Wang",
-      "Di Wang",
-      "Lijie Hu"
-    ],
-    "institution": "",
-    "link": "http://arxiv.org/pdf/2511.02243v1",
-    "abstract": "Multimodal large language models (MLLMs) must resolve conflicts when different modalities provide contradictory information, a process we term modality following. Prior work measured this behavior only with coarse dataset-level statistics, overlooking the influence of model's confidence in unimodal reasoning. In this paper, we introduce a new framework that decomposes modality following into two fundamental factors: relative reasoning uncertainty (the case-specific confidence gap between unimodal predictions) and inherent modality preference( a model's stable bias when uncertainties are balanced). To validate this framework, we construct a controllable dataset that systematically varies the reasoning difficulty of visual and textual inputs. Using entropy as a fine-grained uncertainty metric, we uncover a universal law: the probability of following a modality decreases monotonically as its relative uncertainty increases. At the relative difficulty level where the model tends to follow both modalities with comparable probability what we call the balance point, a practical indicator of the model's inherent preference. Unlike traditional macro-level ratios, this measure offers a more principled and less confounded way to characterize modality bias, disentangling it from unimodal capabilities and dataset artifacts. Further, by probing layer-wise predictions, we reveal the internal mechanism of oscillation: in ambiguous regions near the balance point, models vacillate between modalities across layers, explaining externally observed indecision. Together, these findings establish relative uncertainty and inherent preference as the two governing principles of modality following, offering both a quantitative framework and mechanistic insight into how MLLMs resolve conflicting information.",
-    "fetched_at": "2025-11-06T02:19:07.217881Z"
-  },
-  {
-    "id": "2511.02244v1",
-    "title": "Neural network initialization with nonlinear characteristics and   information on spectral bias",
-    "date": "2025-11-04",
-    "tags": [
-      "cs.LG",
-      "LG"
-    ],
-    "authors": [
-      "Hikaru Homma",
-      "Jun Ohkubo"
-    ],
-    "institution": "",
-    "link": "http://arxiv.org/pdf/2511.02244v1",
-    "abstract": "Initialization of neural network parameters, such as weights and biases, has a crucial impact on learning performance; if chosen well, we can even avoid the need for additional training with backpropagation. For example, algorithms based on the ridgelet transform or the SWIM (sampling where it matters) concept have been proposed for initialization. On the other hand, it is well-known that neural networks tend to learn coarse information in the earlier layers. The feature is called spectral bias. In this work, we investigate the effects of utilizing information on the spectral bias in the initialization of neural networks. Hence, we propose a framework that adjusts the scale factors in the SWIM algorithm to capture low-frequency components in the early-stage hidden layers and to represent high-frequency components in the late-stage hidden layers. Numerical experiments on a one-dimensional regression task and the MNIST classification task demonstrate that the proposed method outperforms the conventional initialization algorithms. This work clarifies the importance of intrinsic spectral properties in learning neural networks, and the finding yields an effective parameter initialization strategy that enhances their training performance.",
-    "fetched_at": "2025-11-06T02:19:07.217817Z"
   }
 ]
